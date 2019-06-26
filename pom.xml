@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example.jk</groupId>
+    <artifactId>serenity-jbehave-broswerstack-demo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <serenity.version>2.0.55</serenity.version>
+        <serenity-maven-plugin.version>2.0.54</serenity-maven-plugin.version>
+        <serenity-jbehave.version>1.46.0</serenity-jbehave.version>
+        <browserstack.version>1.0.3</browserstack.version>
+        <slf4j-simple.version>1.7.26</slf4j-simple.version>
+        <surefire-plugin.version>2.22.2</surefire-plugin.version>
+        <failsafe-plugin.version>2.22.2</failsafe-plugin.version>
+    </properties>
+
+    <dependencies>
+        <!-- JBehave Dependencies -->
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-core</artifactId>
+            <version>${serenity.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-jbehave</artifactId>
+            <version>${serenity-jbehave.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.serenity-bdd</groupId>
+                    <artifactId>serenity-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-simple.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.browserstack</groupId>
+            <artifactId>browserstack-local-java</artifactId>
+            <version>${browserstack.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- JBehave Serenity -->
+            <plugin>
+                <groupId>net.serenity-bdd.maven.plugins</groupId>
+                <artifactId>serenity-maven-plugin</artifactId>
+                <version>${serenity-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${failsafe-plugin.version}</version>
+                <configuration>
+                    <includes>
+                        <include>com/example/SingleTest.java</include>
+                    </includes>
+                    <reuseForks>true</reuseForks>
+                    <argLine>-Xmx1024m</argLine>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+    <profile>
+        <id>single</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${failsafe-plugin.version}</version>
+                    <configuration>
+                        <includes>
+                            <include>com/example/SingleTest.java</include>
+                        </includes>
+                        <reuseForks>true</reuseForks>
+                        <argLine>-Xmx1024m</argLine>
+                        <systemPropertyVariables>
+                            <environment>single</environment>
+                            <taskID>MY_TEST_SCHEMA_${surefire.forkNumber}</taskID>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+    </profiles>
+</project>
